@@ -10,6 +10,7 @@ import {
   generateLinkedInPost, 
   generateCareerAdvice 
 } from "./services/openai";
+import { pythonGaiService } from "./services/pythonGaiService";
 import { exportResumeToPDF, exportResumeToDocx } from "./services/resumeExport";
 import { insertResumeSchema, insertJobApplicationSchema, insertLinkedinPostSchema, insertChatMessageSchema } from "@shared/schema";
 
@@ -72,20 +73,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "LinkedIn URL is required" });
       }
 
-      const resumeContent = await generateResumeFromLinkedIn({
-        linkedinUrl,
-        targetRole,
-        userProfile: { userId: mockUserId }
+      // Use Python GAI service for LinkedIn resume generation
+      const pythonResponse = await pythonGaiService.generateResumeFromLinkedIn({
+        linkedin_url: linkedinUrl,
+        target_role: targetRole,
+        user_profile: { userId: mockUserId }
       });
+
+      if (!pythonResponse.success) {
+        // Fallback to OpenAI service if Python service fails
+        console.log("Python GAI service failed, falling back to OpenAI");
+        const resumeContent = await generateResumeFromLinkedIn({
+          linkedinUrl,
+          targetRole,
+          userProfile: { userId: mockUserId }
+        });
+
+        const resume = await storage.createResume({
+          userId: mockUserId,
+          title: "AI Generated Resume",
+          content: resumeContent,
+          format: "1-page"
+        });
+
+        return res.json({ resume, content: resumeContent });
+      }
 
       const resume = await storage.createResume({
         userId: mockUserId,
-        title: "AI Generated Resume",
-        content: resumeContent,
+        title: "LinkedIn GAI Generated Resume",
+        content: pythonResponse.resume_content,
         format: "1-page"
       });
 
-      res.json({ resume, content: resumeContent });
+      res.json({ resume, content: pythonResponse.resume_content });
     } catch (error) {
       console.error("Error generating resume:", error);
       res.status(500).json({ message: "Failed to generate resume: " + (error as Error).message });
@@ -195,13 +216,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userSkills = await storage.getUserSkills(mockUserId);
       const skillNames = userSkills.map(us => us.skill.name);
 
-      const analysis = await analyzeJobMatch(
-        skillNames,
-        job.requirements || "",
-        job.description || ""
-      );
+      // Use Python GAI service for job matching analysis
+      const pythonResponse = await pythonGaiService.analyzeJobMatch({
+        user_skills: skillNames,
+        job_requirements: job.requirements || "",
+        job_description: job.description || ""
+      });
 
-      res.json(analysis);
+      if (!pythonResponse.success) {
+        // Fallback to OpenAI service
+        console.log("Python GAI service failed for job analysis, falling back to OpenAI");
+        const analysis = await analyzeJobMatch(
+          skillNames,
+          job.requirements || "",
+          job.description || ""
+        );
+        return res.json(analysis);
+      }
+
+      res.json(pythonResponse.match_analysis);
     } catch (error) {
       console.error("Error analyzing job match:", error);
       res.status(500).json({ message: "Failed to analyze job match: " + (error as Error).message });
@@ -276,7 +309,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const user = await storage.getUser(mockUserId);
       
-      const content = await generateLinkedInPost(topic, details || "", user);
+      // Use Python GAI service for LinkedIn post generation
+      const pythonResponse = await pythonGaiService.generateLinkedInPost({
+        topic,
+        details: details || "",
+        user_profile: user
+      });
+
+      let content: string;
+      if (!pythonResponse.success) {
+        // Fallback to OpenAI service
+        console.log("Python GAI service failed for LinkedIn post, falling back to OpenAI");
+        content = await generateLinkedInPost(topic, details || "", user);
+      } else {
+        content = pythonResponse.post_content || "";
+      }
       
       const post = await storage.createPost({
         userId: mockUserId,
