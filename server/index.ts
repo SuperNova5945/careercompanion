@@ -1,6 +1,13 @@
+import "dotenv/config";
+import fetch from "node-fetch";
+import { webcrypto } from "crypto";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+
+// Polyfills for Node.js v16
+globalThis.fetch = fetch as any;
+globalThis.crypto = webcrypto as any;
 
 const app = express();
 app.use(express.json());
