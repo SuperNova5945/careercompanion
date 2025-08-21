@@ -180,7 +180,7 @@ export function BrandingTab() {
                         alt="Profile picture"
                       />
                       <div>
-                        <div className="font-semibold text-gray-900">Sarah Johnson</div>
+                        <div className="font-semibold text-gray-900">Chenkai Xie</div>
                         <div className="text-sm text-gray-600">Senior Frontend Developer</div>
                       </div>
                     </div>
