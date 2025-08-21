@@ -16,11 +16,11 @@ export async function seedDatabase() {
 
     // Insert sample user
     const [user] = await db.insert(users).values({
-      email: "sarah.johnson@example.com",
-      firstName: "Sarah",
-      lastName: "Johnson",
+      email: "chenkai.xie@example.com",
+      firstName: "Chenkai",
+      lastName: "Xie",
       profileImageUrl: "https://images.unsplash.com/photo-1494790108755-2616b612b787?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=150&h=150",
-      linkedinUrl: "https://linkedin.com/in/sarah-johnson",
+      linkedinUrl: "https://linkedin.com/in/chenkai-xie",
       location: "San Francisco, CA",
       title: "Senior Frontend Developer"
     }).returning();

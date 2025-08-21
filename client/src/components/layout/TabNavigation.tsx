@@ -54,7 +54,7 @@ export function TabNavigation() {
           <div className="flex items-center">
             <div className="ml-3 relative">
               <div className="flex items-center space-x-3">
-                <span className="text-sm font-medium text-white hidden sm:block">Sarah Johnson</span>
+                <span className="text-sm font-medium text-white hidden sm:block">Chenkai Xie</span>
                 <img 
                   className="h-8 w-8 rounded-full border-2 border-blue-300" 
                   src="https://images.unsplash.com/photo-1494790108755-2616b612b787?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=150&h=150" 

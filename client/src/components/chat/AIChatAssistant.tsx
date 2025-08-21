@@ -137,7 +137,7 @@ export function AIChatAssistant({ onClose }: AIChatAssistantProps) {
           </div>
           <div className="flex-1">
             <div className="bg-gray-100 rounded-lg p-3">
-              <p className="text-sm text-gray-900">Hi Sarah! I'm here to help with your career journey. I can assist with:</p>
+              <p className="text-sm text-gray-900">Hi Chenkai! I'm here to help with your career journey. I can assist with:</p>
               <ul className="text-sm text-gray-700 mt-2 space-y-1">
                 <li>• Resume optimization</li>
                 <li>• Job search strategy</li>
