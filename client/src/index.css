@@ -1,0 +1,448 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(210 25% 7.8431%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(210 25% 7.8431%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(210 25% 7.8431%);
+  --primary: hsl(218 100% 40%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(0 0% 96%);
+  --secondary-foreground: hsl(0 0% 9%);
+  --muted: hsl(0 0% 96%);
+  --muted-foreground: hsl(0 0% 45%);
+  --accent: hsl(0 0% 96%);
+  --accent-foreground: hsl(0 0% 9%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(214.3 31.8% 91.4%);
+  --input: hsl(214.3 31.8% 91.4%);
+  --ring: hsl(217.2 91.2% 59.8%);
+  --chart-1: hsl(217.2 91.2% 59.8%);
+  --chart-2: hsl(212 95% 68%);
+  --chart-3: hsl(216 92% 60%);
+  --chart-4: hsl(210 98% 78%);
+  --chart-5: hsl(212 97% 87%);
+  --sidebar: hsl(0 0% 100%);
+  --sidebar-foreground: hsl(210 25% 7.8431%);
+  --sidebar-primary: hsl(217.2 91.2% 59.8%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(210 40% 98%);
+  --sidebar-accent-foreground: hsl(222.2 84% 4.9%);
+  --sidebar-border: hsl(214.3 31.8% 91.4%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --font-sans: Inter, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+  --radius: 0.5rem;
+  
+  /* LinkedIn-inspired Design System Colors */
+  --linkedin-blue: hsl(218 100% 40%);
+  --linkedin-blue-light: hsl(218 100% 95%);
+  --linkedin-blue-dark: hsl(218 100% 35%);
+  --primary-50: hsl(218 100% 97%);
+  --primary-100: hsl(218 100% 95%);
+  --primary-500: hsl(218 100% 40%);
+  --primary-600: hsl(218 100% 40%);
+  --primary-700: hsl(218 100% 35%);
+  
+  /* Success colors from design reference */
+  --success-500: hsl(142.1 76.2% 36.3%);
+  --success-600: hsl(142.1 70.6% 45.3%);
+  --success-700: hsl(142.4 71.8% 29.2%);
+  
+  /* Warning colors from design reference */
+  --warning-500: hsl(38 92% 50%);
+  --warning-600: hsl(32 95% 44%);
+  --warning-700: hsl(26 90% 37%);
+  
+  /* Gray scale matching design reference */
+  --gray-50: hsl(210 20% 98%);
+  --gray-100: hsl(220 14.3% 95.9%);
+  --gray-200: hsl(220 13% 91%);
+  --gray-300: hsl(216 12.2% 83.9%);
+  --gray-400: hsl(218 10.6% 64.9%);
+  --gray-500: hsl(220 8.9% 46.1%);
+  --gray-600: hsl(215 13.8% 34.1%);
+  --gray-700: hsl(217 19.1% 26.7%);
+  --gray-800: hsl(215 27.9% 16.9%);
+  --gray-900: hsl(220.9 39.3% 11%);
+}
+
+.dark {
+  --background: hsl(222.2 84% 4.9%);
+  --foreground: hsl(210 40% 98%);
+  --card: hsl(222.2 84% 4.9%);
+  --card-foreground: hsl(210 40% 98%);
+  --popover: hsl(222.2 84% 4.9%);
+  --popover-foreground: hsl(210 40% 98%);
+  --primary: hsl(217.2 91.2% 59.8%);
+  --primary-foreground: hsl(222.2 84% 4.9%);
+  --secondary: hsl(217.2 32.6% 17.5%);
+  --secondary-foreground: hsl(210 40% 98%);
+  --muted: hsl(217.2 32.6% 17.5%);
+  --muted-foreground: hsl(215 20.2% 65.1%);
+  --accent: hsl(217.2 32.6% 17.5%);
+  --accent-foreground: hsl(210 40% 98%);
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(210 40% 98%);
+  --border: hsl(217.2 32.6% 17.5%);
+  --input: hsl(217.2 32.6% 17.5%);
+  --ring: hsl(212.7 26.8% 83.9%);
+  --chart-1: hsl(220 70% 50%);
+  --chart-2: hsl(160 60% 45%);
+  --chart-3: hsl(30 80% 55%);
+  --chart-4: hsl(280 65% 60%);
+  --chart-5: hsl(340 75% 55%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    background-color: hsl(0 0% 97%);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  /* Primary color utilities matching design reference exactly */
+  .text-primary-50 {
+    color: hsl(214.3 100% 97.1%);
+  }
+  
+  .text-primary-500 {
+    color: hsl(221.2 83.2% 53.3%);
+  }
+  
+  .text-primary-600 {
+    color: hsl(217.2 91.2% 59.8%);
+  }
+  
+  .text-primary-700 {
+    color: hsl(215 87.9% 51%);
+  }
+  
+  .bg-primary-50 {
+    background-color: hsl(214.3 100% 97.1%);
+  }
+  
+  .bg-primary-100 {
+    background-color: hsl(214.3 100% 95.1%);
+  }
+  
+  .bg-primary-500 {
+    background-color: hsl(221.2 83.2% 53.3%);
+  }
+  
+  .bg-primary-600 {
+    background-color: hsl(217.2 91.2% 59.8%);
+  }
+  
+  .bg-primary-700 {
+    background-color: hsl(215 87.9% 51%);
+  }
+  
+  .border-primary-200 {
+    border-color: hsl(213.3 93.9% 87.8%);
+  }
+  
+  .border-primary-400 {
+    border-color: hsl(213.1 93.2% 67.8%);
+  }
+  
+  .border-primary-500 {
+    border-color: hsl(221.2 83.2% 53.3%);
+  }
+  
+  .hover\:bg-primary-700:hover {
+    background-color: hsl(215 87.9% 51%);
+  }
+  
+  .hover\:bg-primary-100:hover {
+    background-color: hsl(214.3 100% 95.1%);
+  }
+  
+  .hover\:border-primary-400:hover {
+    border-color: hsl(213.1 93.2% 67.8%);
+  }
+
+  /* Success color utilities matching design reference */
+  .text-success-500 {
+    color: hsl(142.1 76.2% 36.3%);
+  }
+  
+  .text-success-600 {
+    color: hsl(142.1 70.6% 45.3%);
+  }
+  
+  .text-success-700 {
+    color: hsl(142.4 71.8% 29.2%);
+  }
+  
+  .bg-success-600 {
+    background-color: hsl(142.1 70.6% 45.3%);
+  }
+  
+  .hover\:bg-success-700:hover {
+    background-color: hsl(142.4 71.8% 29.2%);
+  }
+
+  /* Warning color utilities matching design reference */
+  .text-warning-500 {
+    color: hsl(38 92% 50%);
+  }
+  
+  .text-warning-600 {
+    color: hsl(32 95% 44%);
+  }
+  
+  .text-warning-700 {
+    color: hsl(26 90% 37%);
+  }
+
+  /* Utility classes for better interactivity */
+  .hover\:text-gray-700:hover {
+    color: hsl(217 19.1% 26.7%);
+  }
+  
+  .hover\:text-gray-900:hover {
+    color: hsl(220.9 39.3% 11%);
+  }
+  
+  .hover\:text-primary-700:hover {
+    color: hsl(215 87.9% 51%);
+  }
+  
+  .hover\:border-gray-300:hover {
+    border-color: hsl(216 12.2% 83.9%);
+  }
+  
+  .hover\:bg-gray-50:hover {
+    background-color: hsl(210 20% 98%);
+  }
+
+  /* Professional focus styles for accessibility */
+  .focus\:ring-2:focus {
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+  }
+
+  .focus\:ring-primary-500:focus {
+    --tw-ring-color: hsl(221.2 83.2% 53.3%);
+  }
+
+  .focus\:ring-offset-2:focus {
+    --tw-ring-offset-width: 2px;
+  }
+
+  /* Professional transitions */
+  .transition-colors {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+
+  .transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+
+  /* LinkedIn-style card styling */
+  .career-card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200;
+  }
+
+  .linkedin-card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden;
+  }
+
+  .linkedin-header {
+    @apply bg-white border-b border-gray-200 shadow-sm;
+  }
+
+  /* LinkedIn-style button variations */
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 px-4 py-2 rounded-full font-medium transition-all;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent text-primary-600 border border-primary-600 hover:bg-primary-50 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 px-4 py-2 rounded-full font-medium transition-all;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 px-4 py-2 rounded-full font-medium transition-all;
+  }
+
+  .btn-success {
+    @apply bg-success-600 text-white hover:bg-success-700 focus:ring-2 focus:ring-success-500 focus:ring-offset-2 px-4 py-2 rounded-md font-medium transition-colors;
+  }
+
+  .btn-warning {
+    @apply bg-warning-600 text-white hover:bg-warning-700 focus:ring-2 focus:ring-warning-500 focus:ring-offset-2 px-4 py-2 rounded-md font-medium transition-colors;
+  }
+
+  /* Tab styling matching design reference */
+  .tab-active {
+    @apply border-primary-500 text-primary-600 border-b-2;
+  }
+
+  .tab-inactive {
+    @apply text-gray-500 hover:text-gray-700 border-transparent hover:border-gray-300;
+  }
+
+  /* Status badge styles matching design */
+  .badge-status-applied {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .badge-status-interview {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .badge-status-review {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  .badge-status-offer {
+    @apply bg-purple-100 text-purple-800;
+  }
+
+  .badge-status-rejected {
+    @apply bg-red-100 text-red-800;
+  }
+
+  /* Professional form styling */
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors;
+  }
+
+  .form-textarea {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-vertical;
+  }
+
+  .form-select {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors bg-white;
+  }
+
+  /* Loading states */
+  .skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+  }
+
+  .skeleton-text {
+    @apply h-4 bg-gray-200 rounded animate-pulse;
+  }
+
+  .skeleton-avatar {
+    @apply w-10 h-10 bg-gray-200 rounded-full animate-pulse;
+  }
+
+  /* Professional spacing utilities */
+  .container-professional {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-spacing {
+    @apply py-8;
+  }
+
+  .subsection-spacing {
+    @apply py-6;
+  }
+
+  /* Professional table styling */
+  .table-professional {
+    @apply min-w-full divide-y divide-gray-200;
+  }
+
+  .table-header {
+    @apply bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+  }
+
+  .table-cell {
+    @apply px-6 py-4 whitespace-nowrap text-sm;
+  }
+
+  /* Chat interface styling */
+  .chat-bubble-user {
+    @apply bg-primary-600 text-white rounded-lg p-3 max-w-xs ml-auto;
+  }
+
+  .chat-bubble-assistant {
+    @apply bg-gray-100 text-gray-900 rounded-lg p-3 max-w-xs;
+  }
+
+  /* Network visualization placeholder */
+  .network-viz-placeholder {
+    @apply bg-gray-50 rounded-lg p-8 text-center min-h-96 flex items-center justify-center;
+  }
+
+  /* Professional dividers */
+  .divider-professional {
+    @apply border-t border-gray-200 my-6;
+  }
+
+  .divider-subtle {
+    @apply border-t border-gray-100 my-4;
+  }
+}
+
+/* Font Awesome integration */
+.fas, .fab, .far, .fal, .fad, .fass, .fasr, .fatl {
+  font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands", "Font Awesome 6 Pro" !important;
+}
+
+/* Professional loading animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Professional scrollbar styling */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(216 12.2% 83.9%) hsl(220 14.3% 95.9%);
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: hsl(220 14.3% 95.9%);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: hsl(216 12.2% 83.9%);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(218 10.6% 64.9%);
+}
