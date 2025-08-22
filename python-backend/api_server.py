@@ -59,11 +59,16 @@ class LinkedInPostRequest(BaseModel):
     details: Optional[str] = None
     user_profile: Optional[Dict[str, Any]] = None
 
+class ResumePolishRequest(BaseModel):
+    resume_data: Dict[str, Any]
+    job_data: Dict[str, Any]
+
 class APIResponse(BaseModel):
     success: bool
     resume_content: Optional[Dict[str, Any]] = None
     match_analysis: Optional[Dict[str, Any]] = None
     post_content: Optional[str] = None
+    polishing_suggestions: Optional[Dict[str, Any]] = None
     error: Optional[str] = None
 
 @app.get("/health")
@@ -149,6 +154,33 @@ async def generate_linkedin_post_endpoint(request: LinkedInPostRequest):
             error=f"Failed to generate LinkedIn post: {str(e)}"
         )
 
+@app.post("/api/resume/polish", response_model=APIResponse)
+async def polish_resume_endpoint(request: ResumePolishRequest):
+    """Polish resume for specific job using LinkedIn GAI"""
+    logger.info(f"Received resume polishing request for job: {request.job_data.get('title', 'Unknown')}")
+    logger.info(f"Resume data provided: {bool(request.resume_data)}")
+    
+    try:
+        polish_result = await gai_service.polish_resume_for_job(
+            resume_data=request.resume_data,
+            job_data=request.job_data
+        )
+        
+        logger.info(f"Resume polishing completed: success={polish_result.get('success', False)}")
+        
+        return APIResponse(
+            success=polish_result.get("success", False),
+            polishing_suggestions=polish_result.get("polishingSuggestions"),
+            error=polish_result.get("error")
+        )
+    
+    except Exception as e:
+        logger.error(f"Failed to polish resume: {str(e)}", exc_info=True)
+        return APIResponse(
+            success=False,
+            error=f"Failed to polish resume: {str(e)}"
+        )
+
 @app.get("/api/service/status")
 async def service_status():
     """Get detailed service status"""
@@ -158,7 +190,8 @@ async def service_status():
         "endpoints": [
             "/api/linkedin/generate-resume",
             "/api/linkedin/analyze-job-match", 
-            "/api/linkedin/generate-post"
+            "/api/linkedin/generate-post",
+            "/api/resume/polish"
         ]
     }
 

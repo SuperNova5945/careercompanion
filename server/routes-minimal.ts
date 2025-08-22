@@ -161,6 +161,116 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  // Resume polishing endpoint - LinkedIn GAI integration
+  app.post("/api/resume/polish", async (req, res) => {
+    try {
+      const { resumeData, jobData } = req.body;
+
+      if (!resumeData || !jobData) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "Resume data and job data are required" 
+        });
+      }
+
+      console.log("Polishing resume for job:", jobData.title || "Unknown Position");
+      console.log("Company:", jobData.company?.name || "Unknown Company");
+
+      // Call Python GAI service for resume polishing
+      const pythonResponse = await fetch("http://127.0.0.1:8000/api/resume/polish", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          resume_data: resumeData,
+          job_data: jobData
+        })
+      });
+
+      if (!pythonResponse.ok) {
+        throw new Error(`Python service responded with status: ${pythonResponse.status}`);
+      }
+
+      const polishResult = await pythonResponse.json();
+      console.log("Python GAI polish response success:", polishResult.success);
+
+      if (polishResult.success && polishResult.polishing_suggestions) {
+        console.log("Resume polishing successful");
+        res.json({ 
+          success: true,
+          polishingSuggestions: polishResult.polishing_suggestions,
+          message: "Resume polishing suggestions generated successfully"
+        });
+      } else {
+        // Fallback to mock polishing suggestions
+        console.log("Python GAI service failed, using fallback suggestions");
+        const fallbackSuggestions = {
+          overallScore: 75,
+          keyStrengths: [
+            "Strong technical background",
+            "Relevant industry experience", 
+            "Good educational foundation"
+          ],
+          criticalGaps: [
+            "Could emphasize more relevant keywords",
+            "Missing quantifiable achievements",
+            "Could better highlight leadership experience"
+          ],
+          suggestions: [
+            {
+              section: "summary",
+              priority: "high",
+              type: "rewrite",
+              current: "Current professional summary",
+              suggested: `Rewrite summary to emphasize experience relevant to ${jobData.title || 'target role'}, highlighting specific technologies and achievements`,
+              reasoning: `Tailoring summary to ${jobData.company?.name || 'company'} requirements will improve ATS matching`
+            },
+            {
+              section: "experience",
+              priority: "high", 
+              type: "emphasize",
+              current: "Current job descriptions",
+              suggested: "Emphasize projects and achievements that demonstrate relevant expertise for this specific role",
+              reasoning: "Highlighting relevant technical experience will show direct applicability to the role"
+            }
+          ],
+          keywordOptimization: [
+            {
+              keyword: jobData.skills?.[0] || "relevant technology",
+              currentUsage: "Mentioned but not emphasized",
+              suggestion: "Include in summary and highlight specific projects using this technology"
+            }
+          ],
+          experienceOptimization: [
+            {
+              experienceTitle: "Most recent position",
+              suggestion: `Highlight aspects most relevant to ${jobData.title || 'target role'} responsibilities`,
+              focusAreas: ["Technical leadership", "Project impact"]
+            }
+          ],
+          additionalRecommendations: [
+            `Research ${jobData.company?.name || 'target company'} technology stack and incorporate relevant keywords`,
+            "Add quantifiable metrics to demonstrate impact",
+            "Consider reordering experience bullets to lead with most relevant achievements"
+          ]
+        };
+
+        res.json({ 
+          success: true,
+          polishingSuggestions: fallbackSuggestions,
+          message: "Resume polishing suggestions generated using fallback (Python GAI service unavailable)"
+        });
+      }
+    } catch (error) {
+      console.error("Resume polishing error:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: "Failed to polish resume: " + (error as Error).message
+      });
+    }
+  });
+
   // Health check endpoint
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok", message: "Minimal server running" });

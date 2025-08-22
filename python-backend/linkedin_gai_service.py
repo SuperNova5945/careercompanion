@@ -495,3 +495,201 @@ What are your thoughts on {topic}? I'd love to hear your perspectives in the com
                 "post_content": fallback_post,
                 "error": None
             }
+
+    async def polish_resume_for_job(self, resume_data: dict, job_data: dict) -> dict:
+        """
+        Polish and optimize a resume for a specific job position.
+        
+        Args:
+            resume_data: Current resume content (personalInfo, experience, skills, etc.)
+            job_data: Job details (title, company, requirements, skills, etc.)
+            
+        Returns:
+            Dict containing polishing suggestions and optimized resume
+        """
+        try:
+            logger.info("Starting resume polishing process")
+            logger.info(f"Job title: {job_data.get('title', 'Unknown')}")
+            logger.info(f"Company: {job_data.get('company', {}).get('name', 'Unknown')}")
+            
+            # Check if LinkedIn GAI is available
+            if not self.llm:
+                logger.warning("LinkedIn GAI not available, using mock polishing suggestions")
+                return self._generate_mock_polish_suggestions(resume_data, job_data)
+            
+            logger.info(f"Resource ID: {os.getenv('LINKEDIN_GAI_RESOURCE_ID')}")
+            logger.info(f"Deployment ID: {os.getenv('LINKEDIN_GAI_DEPLOYMENT_ID')}")
+            
+            prompt_template = ChatPromptTemplate.from_template("""
+            You are an expert resume coach and career strategist. Analyze the provided resume and job posting to give specific, actionable suggestions for optimizing the resume for this particular role.
+
+            CURRENT RESUME:
+            {resume_content}
+
+            TARGET JOB:
+            Position: {job_title} at {company_name}
+            Location: {job_location}
+            Work Mode: {work_mode}
+            Salary Range: {salary_range}
+            Required Skills: {required_skills}
+            Job Requirements: {job_requirements}
+            Job Description: {job_description}
+
+            Provide detailed resume polishing suggestions in the following JSON format:
+            {{
+                "overallScore": [1-100 score for current resume fit],
+                "keyStrengths": ["strength 1", "strength 2", "strength 3"],
+                "criticalGaps": ["gap 1", "gap 2", "gap 3"],
+                "suggestions": [
+                    {{
+                        "section": "summary|experience|skills|education",
+                        "priority": "high|medium|low",
+                        "type": "emphasize|add|remove|rewrite|consolidate",
+                        "current": "current content or section",
+                        "suggested": "specific suggested improvement",
+                        "reasoning": "why this change will help for this specific role"
+                    }}
+                ],
+                "keywordOptimization": [
+                    {{
+                        "keyword": "important keyword from job posting",
+                        "currentUsage": "how it's currently used or missing",
+                        "suggestion": "how to better incorporate this keyword"
+                    }}
+                ],
+                "experienceOptimization": [
+                    {{
+                        "experienceTitle": "job title from resume",
+                        "suggestion": "how to better highlight relevant aspects",
+                        "focusAreas": ["area 1", "area 2"]
+                    }}
+                ],
+                "additionalRecommendations": [
+                    "recommendation 1",
+                    "recommendation 2"
+                ]
+            }}
+
+            Focus on:
+            1. Identifying which experiences to emphasize more for this specific role
+            2. Suggesting content consolidation where appropriate
+            3. Recommending keyword optimization for ATS systems
+            4. Highlighting transferable skills relevant to the target position
+            5. Suggesting quantifiable achievements that align with job requirements
+            6. Recommending section reordering or restructuring if beneficial
+
+            Return only the JSON object with specific, actionable suggestions.
+            """)
+
+            # Create the chain
+            chain = prompt_template | self.llm | StrOutputParser()
+            observed_chain = ObservedLCEL(chain, observe_config=ObserveConfig(has_hc_data=False))
+            
+            # Prepare input data
+            resume_content = json.dumps(resume_data, indent=2)
+            company_name = job_data.get('company', {}).get('name', 'Unknown Company')
+            salary_min = job_data.get('salaryMin', 0)
+            salary_max = job_data.get('salaryMax', 0)
+            salary_range = f"${salary_min//1000}k - ${salary_max//1000}k" if salary_min and salary_max else "Not specified"
+            
+            logger.info("Invoking LinkedIn GAI for resume polishing")
+            
+            # Generate polishing suggestions
+            result = await observed_chain.ainvoke({
+                "resume_content": resume_content,
+                "job_title": job_data.get('title', ''),
+                "company_name": company_name,
+                "job_location": job_data.get('location', ''),
+                "work_mode": job_data.get('workMode', ''),
+                "salary_range": salary_range,
+                "required_skills": ', '.join(job_data.get('skills', [])),
+                "job_requirements": job_data.get('requirements', ''),
+                "job_description": job_data.get('description', '')
+            })
+            
+            logger.info("Successfully generated resume polishing suggestions")
+            
+            # Parse the JSON response
+            try:
+                json_string = re.sub(r"^```json|```$", "", result.strip(), flags=re.MULTILINE).strip()
+                parsed_result = json.loads(json_string)
+            except json.JSONDecodeError:
+                logger.warning("Failed to parse JSON response, returning raw result")
+                parsed_result = {"suggestions": [{"type": "general", "suggested": result}]}
+            
+            return {
+                "success": True,
+                "polishingSuggestions": parsed_result,
+                "message": "Resume polishing suggestions generated successfully"
+            }
+            
+        except Exception as e:
+            logger.error(f"Error polishing resume: {str(e)}")
+            return {
+                "success": False,
+                "error": str(e),
+                "message": "Failed to generate resume polishing suggestions"
+            }
+
+    def _generate_mock_polish_suggestions(self, resume_data: dict, job_data: dict) -> dict:
+        """Generate mock polishing suggestions when LinkedIn GAI is not available"""
+        job_title = job_data.get('title', 'Unknown Position')
+        company_name = job_data.get('company', {}).get('name', 'Unknown Company')
+        required_skills = job_data.get('skills', [])
+        
+        mock_suggestions = {
+            "overallScore": 75,
+            "keyStrengths": [
+                "Strong technical background",
+                "Relevant industry experience", 
+                "Good educational foundation"
+            ],
+            "criticalGaps": [
+                f"Limited mention of {required_skills[0] if required_skills else 'key skills'} in experience descriptions",
+                "Could emphasize leadership and impact more",
+                "Missing quantifiable achievements"
+            ],
+            "suggestions": [
+                {
+                    "section": "summary",
+                    "priority": "high",
+                    "type": "rewrite",
+                    "current": "Current professional summary",
+                    "suggested": f"Rewrite summary to emphasize experience relevant to {job_title} role, highlighting specific technologies and achievements",
+                    "reasoning": f"Tailoring summary to {company_name}'s requirements will improve ATS matching"
+                },
+                {
+                    "section": "experience",
+                    "priority": "high", 
+                    "type": "emphasize",
+                    "current": "Current job descriptions",
+                    "suggested": f"Emphasize projects and achievements that demonstrate {required_skills[0] if required_skills else 'relevant skills'} expertise",
+                    "reasoning": "Highlighting relevant technical experience will show direct applicability to the role"
+                }
+            ],
+            "keywordOptimization": [
+                {
+                    "keyword": required_skills[0] if required_skills else "relevant technology",
+                    "currentUsage": "Mentioned but not emphasized",
+                    "suggestion": "Include in summary and highlight specific projects using this technology"
+                }
+            ],
+            "experienceOptimization": [
+                {
+                    "experienceTitle": "Most recent position",
+                    "suggestion": f"Highlight aspects most relevant to {job_title} responsibilities",
+                    "focusAreas": ["Technical leadership", "Project impact"]
+                }
+            ],
+            "additionalRecommendations": [
+                f"Research {company_name}'s technology stack and incorporate relevant keywords",
+                "Add quantifiable metrics to demonstrate impact",
+                "Consider reordering experience bullets to lead with most relevant achievements"
+            ]
+        }
+        
+        return {
+            "success": True,
+            "polishingSuggestions": mock_suggestions,
+            "message": "Mock resume polishing suggestions generated (LinkedIn GAI not available)"
+        }

@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { ChatMessage } from "@/lib/types";
@@ -49,7 +51,23 @@ export function AIChatAssistant({ onClose }: AIChatAssistantProps) {
     response: string;
     isUser: boolean;
   }>>([]);
+  const [polishingContext, setPolishingContext] = useState<any>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Check for resume polishing context from localStorage
+    const contextData = localStorage.getItem('aiChatContext');
+    if (contextData) {
+      try {
+        const parsed = JSON.parse(contextData);
+        if (parsed.type === 'resume_polish') {
+          setPolishingContext(parsed);
+        }
+      } catch (error) {
+        console.error('Error parsing AI chat context:', error);
+      }
+    }
+  }, []);
 
   const { data: chatHistory } = useQuery<ChatMessage[]>({
     queryKey: ["/api/chat/history"],
@@ -128,25 +146,121 @@ export function AIChatAssistant({ onClose }: AIChatAssistantProps) {
 
       {/* Chat Messages */}
       <ScrollArea className="flex-1 p-4 space-y-4">
-        {/* Welcome Message */}
-        <div className="flex items-start space-x-3">
-          <div className="flex-shrink-0">
-            <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
-              <i className="fas fa-robot text-white text-xs"></i>
+        {/* Resume Polishing Results or Welcome Message */}
+        {polishingContext ? (
+          <div className="space-y-4">
+            {/* Job Context */}
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+                  <i className="fas fa-magic text-white text-xs"></i>
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                  <h4 className="font-medium text-purple-900 mb-2">Resume Polish Results</h4>
+                  <p className="text-sm text-purple-800 mb-2">
+                    <strong>{polishingContext.jobData.title}</strong> at <strong>{polishingContext.jobData.company.name}</strong>
+                  </p>
+                  <div className="flex items-center mb-3">
+                    <span className="text-sm text-purple-700 mr-2">Overall Match Score:</span>
+                    <Badge variant="secondary" className="bg-purple-100 text-purple-800">
+                      {polishingContext.polishingSuggestions.overallScore}%
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Key Strengths */}
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                  <i className="fas fa-check text-white text-xs"></i>
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                  <h4 className="font-medium text-green-900 mb-2">Key Strengths</h4>
+                  <ul className="text-sm text-green-800 space-y-1">
+                    {polishingContext.polishingSuggestions.keyStrengths.map((strength: string, index: number) => (
+                      <li key={index}>• {strength}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Critical Gaps */}
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
+                  <i className="fas fa-exclamation text-white text-xs"></i>
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="bg-red-50 rounded-lg p-3 border border-red-200">
+                  <h4 className="font-medium text-red-900 mb-2">Areas to Improve</h4>
+                  <ul className="text-sm text-red-800 space-y-1">
+                    {polishingContext.polishingSuggestions.criticalGaps.map((gap: string, index: number) => (
+                      <li key={index}>• {gap}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Suggestions */}
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <i className="fas fa-lightbulb text-white text-xs"></i>
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                  <h4 className="font-medium text-blue-900 mb-2">Improvement Suggestions</h4>
+                  <div className="space-y-3">
+                    {polishingContext.polishingSuggestions.suggestions.map((suggestion: any, index: number) => (
+                      <div key={index} className="border-l-2 border-blue-300 pl-3">
+                        <div className="flex items-center mb-1">
+                          <Badge variant="outline" className="text-xs mr-2">
+                            {suggestion.section}
+                          </Badge>
+                          <Badge variant={suggestion.priority === 'high' ? 'destructive' : suggestion.priority === 'medium' ? 'default' : 'secondary'} className="text-xs">
+                            {suggestion.priority}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-blue-800 font-medium mb-1">{suggestion.suggested}</p>
+                        <p className="text-xs text-blue-600">{suggestion.reasoning}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex-1">
-            <div className="bg-gray-100 rounded-lg p-3">
-              <p className="text-sm text-gray-900">Hi Chenkai! I'm here to help with your career journey. I can assist with:</p>
-              <ul className="text-sm text-gray-700 mt-2 space-y-1">
-                <li>• Resume optimization</li>
-                <li>• Job search strategy</li>
-                <li>• Interview preparation</li>
-                <li>• Skill development planning</li>
-              </ul>
+        ) : (
+          /* Welcome Message */
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
+                <i className="fas fa-robot text-white text-xs"></i>
+              </div>
+            </div>
+            <div className="flex-1">
+              <div className="bg-gray-100 rounded-lg p-3">
+                <p className="text-sm text-gray-900">Hi Chenkai! I'm here to help with your career journey. I can assist with:</p>
+                <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                  <li>• Resume optimization</li>
+                  <li>• Job search strategy</li>
+                  <li>• Interview preparation</li>
+                  <li>• Skill development planning</li>
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Chat Messages */}
         {chatMessages.map((msg) => (

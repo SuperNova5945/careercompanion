@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { cn } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AIChatAssistant } from "@/components/chat/AIChatAssistant";
+import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { cn } from "@/lib/utils";
 import type { JobWithCompany, JobMatchAnalysis } from "@/lib/types";
 
 // Mock qualification analysis data
@@ -242,6 +244,8 @@ const mockJobs: JobWithCompany[] = [
 export function JobsTab() {
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState("best-match");
+  const [showAIChat, setShowAIChat] = useState(false);
+  const { toast } = useToast();
 
   const { data: apiJobs, isLoading } = useQuery<JobWithCompany[]>({
     queryKey: ["/api/jobs"],
@@ -266,6 +270,94 @@ export function JobsTab() {
   const handleJobSelect = (job: JobWithCompany) => {
     setSelectedJobId(job.id);
     analyzeJobMutation.mutate(job.id);
+  };
+
+  const handlePolishResume = async () => {
+    if (selectedJob) {
+      try {
+        // Get the user's current resume data from localStorage or API
+        let resumeData = null;
+        
+        // Try to get resume from localStorage first (from ResumeTab)
+        const storedResume = localStorage.getItem('generatedResume');
+        if (storedResume) {
+          const parsedResume = JSON.parse(storedResume);
+          resumeData = parsedResume.content;
+        }
+        
+        // If no resume found, create a basic structure for polishing suggestions
+        if (!resumeData) {
+          resumeData = {
+            personalInfo: {
+              name: "Your Name",
+              email: "your.email@example.com",
+              location: "Your Location"
+            },
+            summary: "Professional summary to be optimized",
+            experience: [],
+            skills: [],
+            education: []
+          };
+        }
+
+        // Prepare job data for the API
+        const jobData = {
+          title: selectedJob.title,
+          company: {
+            name: selectedJob.company.name,
+            industry: selectedJob.company.industry
+          },
+          location: selectedJob.location,
+          workMode: selectedJob.workMode,
+          salaryMin: selectedJob.salaryMin,
+          salaryMax: selectedJob.salaryMax,
+          skills: selectedJob.skills || [],
+          requirements: selectedJob.requirements || '',
+          description: selectedJob.description || ''
+        };
+
+        // Call the Node.js resume polish API
+        const response = await fetch('/api/resume/polish', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            resumeData,
+            jobData
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`API request failed: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.success && result.polishingSuggestions) {
+          // Store the polishing suggestions and job context for AI chat
+          const aiContext = {
+            type: 'resume_polish',
+            jobData: selectedJob,
+            polishingSuggestions: result.polishingSuggestions,
+            resumeData: resumeData
+          };
+          
+          localStorage.setItem('aiChatContext', JSON.stringify(aiContext));
+          setShowAIChat(true);
+        } else {
+          throw new Error(result.error || 'Failed to get polishing suggestions');
+        }
+
+      } catch (error) {
+        console.error('Resume polishing error:', error);
+        toast({
+          title: "Error",
+          description: "Failed to get resume polishing suggestions. Please try again.",
+          variant: "destructive"
+        });
+      }
+    }
   };
 
   const selectedJob = jobs?.find(job => job.id === selectedJobId);
@@ -473,6 +565,14 @@ export function JobsTab() {
                   <div>
                     <h4 className="font-medium text-gray-900 mb-3">Recommended Actions</h4>
                     <div className="space-y-3">
+                      <Button 
+                        onClick={handlePolishResume}
+                        className="w-full bg-purple-600 hover:bg-purple-700" 
+                        data-testid="button-polish-resume"
+                      >
+                        <i className="fas fa-magic mr-2"></i>
+                        Polish My Resume for This Role
+                      </Button>
                       <Button className="w-full" data-testid="button-apply-now">
                         <i className="fas fa-paper-plane mr-2"></i>
                         Apply Now
@@ -498,6 +598,15 @@ export function JobsTab() {
           </Card>
         </div>
       </div>
+
+      {/* AI Chat Assistant Modal */}
+      {showAIChat && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl h-3/4 m-4">
+            <AIChatAssistant onClose={() => setShowAIChat(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
