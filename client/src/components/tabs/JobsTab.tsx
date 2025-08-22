@@ -244,6 +244,7 @@ const mockJobs: JobWithCompany[] = [
 export function JobsTab() {
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState("best-match");
+  const [isPolishing, setIsPolishing] = useState(false);
   const { toast } = useToast();
 
   const { data: apiJobs, isLoading } = useQuery<JobWithCompany[]>({
@@ -273,6 +274,7 @@ export function JobsTab() {
 
   const handlePolishResume = async () => {
     if (selectedJob) {
+      setIsPolishing(true);
       try {
         // Get the user's current resume data from localStorage or API
         let resumeData = null;
@@ -363,6 +365,8 @@ export function JobsTab() {
           description: "Failed to get resume polishing suggestions. Please try again.",
           variant: "destructive"
         });
+      } finally {
+        setIsPolishing(false);
       }
     }
   };
@@ -574,11 +578,21 @@ export function JobsTab() {
                     <div className="space-y-3">
                       <Button 
                         onClick={handlePolishResume}
-                        className="w-full bg-purple-600 hover:bg-purple-700" 
+                        disabled={isPolishing}
+                        className="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50" 
                         data-testid="button-polish-resume"
                       >
-                        <i className="fas fa-magic mr-2"></i>
-                        Polish My Resume for This Role
+                        {isPolishing ? (
+                          <>
+                            <i className="fas fa-spinner fa-spin mr-2"></i>
+                            Analyzing Resume...
+                          </>
+                        ) : (
+                          <>
+                            <i className="fas fa-magic mr-2"></i>
+                            Polish My Resume for This Role
+                          </>
+                        )}
                       </Button>
                       <Button className="w-full" data-testid="button-apply-now">
                         <i className="fas fa-paper-plane mr-2"></i>
