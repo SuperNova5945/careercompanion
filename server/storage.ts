@@ -1,34 +1,6 @@
-import {
-  users,
-  resumes,
-  companies,
-  jobs,
-  jobApplications,
-  skills,
-  userSkills,
-  learningPaths,
-  badges,
-  linkedinPosts,
-  chatMessages,
-  type User,
-  type InsertUser,
-  type Resume,
-  type InsertResume,
-  type Company,
-  type Job,
-  type JobApplication,
-  type InsertJobApplication,
-  type Skill,
-  type UserSkill,
-  type LearningPath,
-  type InsertLearningPath,
-  type Badge,
-  type InsertBadge,
-  type LinkedinPost,
-  type InsertLinkedinPost,
-  type ChatMessage,
-  type InsertChatMessage,
-} from "@shared/schema";
+import { db } from "./db";
+import { users, resumes, chatMessages } from "@shared/schema-sqlite";
+import type { User, InsertUser, Resume, InsertResume, ChatMessage, InsertChatMessage } from "@shared/schema-sqlite";
 import { db } from "./db";
 import { eq, desc, and, sql } from "drizzle-orm";
 

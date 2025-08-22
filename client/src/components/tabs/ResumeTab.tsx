@@ -13,14 +13,56 @@ export function ResumeTab() {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [resumeFormat, setResumeFormat] = useState("1-page");
   const [generatedResume, setGeneratedResume] = useState<any>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  const linkedinAuthMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("GET", "/api/linkedin/auth-url");
+      return response.json();
+    },
+    onSuccess: (data) => {
+      if (data.authUrl) {
+        setIsAuthenticating(true);
+        // Open LinkedIn OAuth in popup window
+        const popup = window.open(data.authUrl, 'linkedin-auth', 'width=600,height=600');
+        
+        // Listen for OAuth completion
+        const checkClosed = setInterval(() => {
+          if (popup?.closed) {
+            clearInterval(checkClosed);
+            setIsAuthenticating(false);
+            // Check if we got an access token from the callback
+            const token = localStorage.getItem('linkedin_access_token');
+            if (token) {
+              setAccessToken(token);
+              toast({
+                title: "Success",
+                description: "LinkedIn authentication successful!",
+              });
+            }
+          }
+        }, 1000);
+      }
+    },
+    onError: (error) => {
+      setIsAuthenticating(false);
+      toast({
+        title: "Error",
+        description: "Failed to start LinkedIn authentication: " + error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const generateResumeMutation = useMutation({
     mutationFn: async ({ linkedinUrl, targetRole }: { linkedinUrl: string; targetRole?: string }) => {
-      const response = await apiRequest("POST", "/api/resume/generate", {
+      const response = await apiRequest("POST", "/api/resume/generate-with-profile", {
         linkedinUrl,
         targetRole,
+        accessToken: accessToken || undefined,
       });
       return response.json();
     },
@@ -71,6 +113,10 @@ export function ResumeTab() {
       });
     },
   });
+
+  const handleLinkedInAuth = () => {
+    linkedinAuthMutation.mutate();
+  };
 
   const handleGenerateResume = () => {
     if (!linkedinUrl.trim()) {
@@ -157,6 +203,37 @@ export function ResumeTab() {
                     data-testid="input-linkedin-url"
                   />
                 </div>
+                
+                {/* LinkedIn Authentication */}
+                <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-center space-x-2">
+                    <i className="fab fa-linkedin text-blue-600"></i>
+                    <span className="text-sm text-blue-900">
+                      {accessToken ? "✅ LinkedIn Connected" : "🔗 Connect for full profile data"}
+                    </span>
+                  </div>
+                  {!accessToken && (
+                    <Button
+                      onClick={handleLinkedInAuth}
+                      disabled={isAuthenticating || linkedinAuthMutation.isPending}
+                      variant="outline"
+                      size="sm"
+                    >
+                      {isAuthenticating ? (
+                        <>
+                          <i className="fas fa-spinner fa-spin mr-2"></i>
+                          Connecting...
+                        </>
+                      ) : (
+                        <>
+                          <i className="fab fa-linkedin mr-2"></i>
+                          Connect LinkedIn
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+
                 <Button
                   onClick={handleGenerateResume}
                   disabled={generateResumeMutation.isPending}
@@ -171,7 +248,7 @@ export function ResumeTab() {
                   ) : (
                     <>
                       <i className="fas fa-magic mr-2"></i>
-                      Generate Resume
+                      Generate Resume {accessToken ? "(with LinkedIn data)" : "(basic)"}
                     </>
                   )}
                 </Button>

@@ -1,0 +1,90 @@
+{
+    "name": "Chenkai Xie",
+    "headline": "Search | Recommendation | LLM | Agents",
+    "location": "Sunnyvale, California, United States",
+    "contact": {
+      "email": "chxie@linkedin.com",
+      "linkedin": "https://www.linkedin.com/in/chenkaixie"
+    },
+    "languages": ["English", "Chinese (Simplified)"],
+    "certifications": ["iOS Development"],
+    "experience": [
+      {
+        "company": "LinkedIn",
+        "roles": [
+          {
+            "title": "Senior Staff Software Engineer",
+            "start": "2024",
+            "end": "Present",
+            "location": "San Francisco Bay Area",
+            "highlights": ["Building scalable search applications and AI agents"]
+          },
+          {
+            "title": "Staff Software Engineer",
+            "start": "2018",
+            "end": "2024",
+            "location": "San Francisco Bay Area"
+          },
+          {
+            "title": "Senior Software Engineer",
+            "start": "2016",
+            "end": "2018",
+            "location": "San Francisco Bay Area"
+          },
+          {
+            "title": "Software Engineer",
+            "start": "2014-11",
+            "end": "2015-12",
+            "location": ""
+          }
+        ]
+      },
+      {
+        "company": "Oracle",
+        "roles": [
+          {
+            "title": "Software Engineer",
+            "start": "2012-01",
+            "end": "2014-10",
+            "location": "Burlington, Massachusetts",
+            "highlights": [
+              "Developed a SPECvirt benchmark harness and achieved a world record SPECvirt result on Oracle T5 server",
+              "Optimized Oracle hardware and software for near real-time analytics for Oracle OLAP engine on Oracle T5 server"
+            ]
+          }
+        ]
+      },
+      {
+        "company": "Samsung Electronics",
+        "roles": [
+          {
+            "title": "Software Engineer Internship",
+            "start": "2011-06",
+            "end": "2011-08",
+            "location": "Suwon, South Korea",
+            "highlights": [
+              "Developed video plug-ins for Firefox/Safari used by Samsung Smart TV Emulators on Linux and Windows (C++, CMake, GTK, GStreamer/DirectShow)",
+              "Developed and tested Samsung Smart TV applications using JavaScript, CSS, and MySQL"
+            ]
+          }
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "Carnegie Mellon University",
+        "degree": "MS",
+        "field": "Electrical and Computer Engineering"
+      },
+      {
+        "institution": "Southeast University",
+        "degree": "BS",
+        "field": "Physics"
+      },
+      {
+        "institution": "Suzhou High School of Jiangsu Province",
+        "degree": null,
+        "field": null
+      }
+    ]
+  }
