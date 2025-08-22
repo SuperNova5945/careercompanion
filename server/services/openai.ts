@@ -119,7 +119,6 @@ export async function analyzeJobMatch(userSkills: string[], jobRequirements: str
     Job Description: ${jobDescription}
     
     Provide a detailed match analysis including:
-    - Overall match score (0-100)
     - Skills assessment for each required skill
     - Identified gaps
     - Recommendations for improvement

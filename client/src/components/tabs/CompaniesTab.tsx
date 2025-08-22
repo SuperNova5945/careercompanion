@@ -120,12 +120,109 @@ export function CompaniesTab() {
               <p className="text-sm text-gray-600">Companies where your 1st-degree connections moved in the last year</p>
             </div>
             <CardContent className="p-6">
-              <div className="bg-gray-50 rounded-lg p-8 text-center min-h-96 flex items-center justify-center">
-                <div>
-                  <i className="fas fa-project-diagram text-6xl text-gray-400 mb-4"></i>
-                  <p className="text-gray-600 mb-4">Interactive network visualization will appear here</p>
-                  <p className="text-sm text-gray-500">Node sizes represent number of connections, edge thickness shows job change frequency</p>
-                </div>
+              <div className="bg-gray-50 rounded-lg p-6 min-h-96 relative overflow-hidden">
+                {/* Network Graph with Nodes */}
+                <svg width="100%" height="384" viewBox="0 0 800 384" className="absolute inset-0">
+                  {/* Background grid */}
+                  <defs>
+                    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e5e7eb" strokeWidth="1" opacity="0.2"/>
+                    </pattern>
+                  </defs>
+                  <rect width="100%" height="100%" fill="url(#grid)" />
+                  
+                  {/* Arrow markers */}
+                  <defs>
+                    <marker id="arrowhead" markerWidth="8" markerHeight="8" 
+                     refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+                      <polygon points="1,1 1,7 7,4" fill="#374151" stroke="#374151" strokeWidth="1"/>
+                    </marker>
+                  </defs>
+                  
+                  {/* Job Change Arrows - Non-overlapping paths */}
+                  
+                  {/* Meta -> Google (4 moves) */}
+                  <path d="M 150 80 Q 300 50 450 120" stroke="#dc2626" strokeWidth="4" fill="none" markerEnd="url(#arrowhead)" opacity="0.8"/>
+                  <text x="300" y="45" textAnchor="middle" fontSize="11" fill="#dc2626" fontWeight="bold">4</text>
+                  
+                  {/* Microsoft -> Google (3 moves) */}
+                  <path d="M 150 150 Q 300 100 450 120" stroke="#2563eb" strokeWidth="3" fill="none" markerEnd="url(#arrowhead)" opacity="0.8"/>
+                  <text x="280" y="95" textAnchor="middle" fontSize="11" fill="#2563eb" fontWeight="bold">3</text>
+                  
+                  {/* Apple -> Microsoft (2 moves) */}
+                  <path d="M 120 220 Q 100 185 150 150" stroke="#059669" strokeWidth="2" fill="none" markerEnd="url(#arrowhead)" opacity="0.8"/>
+                  <text x="115" y="180" textAnchor="middle" fontSize="11" fill="#059669" fontWeight="bold">2</text>
+                  
+                  {/* Uber -> Apple (1 move) */}
+                  <path d="M 350 280 Q 250 250 120 220" stroke="#f59e0b" strokeWidth="2" fill="none" markerEnd="url(#arrowhead)" opacity="0.8"/>
+                  <text x="235" y="245" textAnchor="middle" fontSize="11" fill="#f59e0b" fontWeight="bold">1</text>
+                  
+                  {/* Amazon -> Netflix (2 moves) */}
+                  <path d="M 650 280 Q 600 250 550 220" stroke="#8b5cf6" strokeWidth="2" fill="none" markerEnd="url(#arrowhead)" opacity="0.8"/>
+                  <text x="600" y="245" textAnchor="middle" fontSize="11" fill="#8b5cf6" fontWeight="bold">2</text>
+                  
+                  {/* Tesla -> Uber (3 moves) */}
+                  <path d="M 280 320 Q 315 300 350 280" stroke="#10b981" strokeWidth="3" fill="none" markerEnd="url(#arrowhead)" opacity="0.8"/>
+                  <text x="315" y="295" textAnchor="middle" fontSize="11" fill="#10b981" fontWeight="bold">3</text>
+                  
+                  {/* Salesforce -> Tesla (1 move) */}
+                  <path d="M 450 350 Q 365 335 280 320" stroke="#f97316" strokeWidth="2" fill="none" markerEnd="url(#arrowhead)" opacity="0.8"/>
+                  <text x="365" y="330" textAnchor="middle" fontSize="11" fill="#f97316" fontWeight="bold">1</text>
+                  
+                  {/* LinkedIn -> Salesforce (2 moves) */}
+                  <path d="M 650 350 Q 550 350 450 350" stroke="#0ea5e9" strokeWidth="2" fill="none" markerEnd="url(#arrowhead)" opacity="0.8"/>
+                  <text x="550" y="345" textAnchor="middle" fontSize="11" fill="#0ea5e9" fontWeight="bold">2</text>
+                  
+                  {/* Airbnb -> LinkedIn (1 move) */}
+                  <path d="M 550 80 Q 600 215 650 350" stroke="#ec4899" strokeWidth="2" fill="none" markerEnd="url(#arrowhead)" opacity="0.8"/>
+                  <text x="615" y="215" textAnchor="middle" fontSize="11" fill="#ec4899" fontWeight="bold">1</text>
+                  
+                  {/* Company Nodes */}
+                  
+                  {/* Google (largest - most incoming) */}
+                  <circle cx="450" cy="120" r="35" fill="#4285f4" stroke="#ffffff" strokeWidth="3" opacity="0.95"/>
+                  <text x="450" y="127" textAnchor="middle" fontSize="12" fill="white" fontWeight="bold">Google</text>
+                  
+                  {/* Microsoft */}
+                  <circle cx="150" cy="150" r="28" fill="#00a1f1" stroke="#ffffff" strokeWidth="3" opacity="0.95"/>
+                  <text x="150" y="156" textAnchor="middle" fontSize="11" fill="white" fontWeight="bold">Microsoft</text>
+                  
+                  {/* Apple */}
+                  <circle cx="120" cy="220" r="25" fill="#007aff" stroke="#ffffff" strokeWidth="3" opacity="0.95"/>
+                  <text x="120" y="226" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">Apple</text>
+                  
+                  {/* Meta */}
+                  <circle cx="150" cy="80" r="30" fill="#1877f2" stroke="#ffffff" strokeWidth="3" opacity="0.95"/>
+                  <text x="150" y="86" textAnchor="middle" fontSize="11" fill="white" fontWeight="bold">Meta</text>
+                  
+                  {/* Netflix */}
+                  <circle cx="550" cy="220" r="22" fill="#e50914" stroke="#ffffff" strokeWidth="3" opacity="0.95"/>
+                  <text x="550" y="226" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">Netflix</text>
+                  
+                  {/* Amazon */}
+                  <circle cx="650" cy="280" r="26" fill="#ff9900" stroke="#ffffff" strokeWidth="3" opacity="0.95"/>
+                  <text x="650" y="286" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">Amazon</text>
+                  
+                  {/* Uber */}
+                  <circle cx="350" cy="280" r="24" fill="#000000" stroke="#ffffff" strokeWidth="3" opacity="0.95"/>
+                  <text x="350" y="286" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">Uber</text>
+                  
+                  {/* Tesla */}
+                  <circle cx="280" cy="320" r="26" fill="#cc0000" stroke="#ffffff" strokeWidth="3" opacity="0.95"/>
+                  <text x="280" y="326" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">Tesla</text>
+                  
+                  {/* Salesforce */}
+                  <circle cx="450" cy="350" r="24" fill="#00a1e0" stroke="#ffffff" strokeWidth="3" opacity="0.95"/>
+                  <text x="450" y="356" textAnchor="middle" fontSize="9" fill="white" fontWeight="bold">Salesforce</text>
+                  
+                  {/* LinkedIn */}
+                  <circle cx="650" cy="350" r="24" fill="#0077b5" stroke="#ffffff" strokeWidth="3" opacity="0.95"/>
+                  <text x="650" y="356" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">LinkedIn</text>
+                  
+                  {/* Airbnb */}
+                  <circle cx="550" cy="80" r="24" fill="#ff5a5f" stroke="#ffffff" strokeWidth="3" opacity="0.95"/>
+                  <text x="550" y="86" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">Airbnb</text>
+                </svg>
               </div>
             </CardContent>
           </Card>

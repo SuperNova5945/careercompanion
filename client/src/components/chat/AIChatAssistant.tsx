@@ -180,12 +180,6 @@ export function AIChatAssistant({ onClose }: AIChatAssistantProps) {
                   <p className="text-sm text-purple-800 mb-2">
                     <strong>{polishingContext.jobData.title}</strong> at <strong>{polishingContext.jobData.company.name}</strong>
                   </p>
-                  <div className="flex items-center mb-3">
-                    <span className="text-sm text-purple-700 mr-2">Overall Match Score:</span>
-                    <Badge variant="secondary" className="bg-purple-100 text-purple-800">
-                      {polishingContext.polishingSuggestions.overallScore}%
-                    </Badge>
-                  </div>
                 </div>
               </div>
             </div>
