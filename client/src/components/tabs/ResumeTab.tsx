@@ -327,10 +327,17 @@ export function ResumeTab() {
                   <h2 className="text-xl font-bold text-gray-900">
                     {generatedResume.content?.personalInfo?.name || "Your Name"}
                   </h2>
-                  <p className="text-gray-600">Professional Title</p>
+                  {generatedResume.content?.personalInfo?.title && (
+                    <p className="text-gray-600">{generatedResume.content.personalInfo.title}</p>
+                  )}
                   <p className="text-sm text-gray-500">
-                    {generatedResume.content?.personalInfo?.email || "email@example.com"} | 
-                    {generatedResume.content?.personalInfo?.phone || "(555) 123-4567"}
+                    {generatedResume.content?.personalInfo?.email && (
+                      <>{generatedResume.content.personalInfo.email}</>
+                    )}
+                    {generatedResume.content?.personalInfo?.email && generatedResume.content?.personalInfo?.phone && " | "}
+                    {generatedResume.content?.personalInfo?.phone && (
+                      <>{generatedResume.content.personalInfo.phone}</>
+                    )}
                   </p>
                 </div>
                 

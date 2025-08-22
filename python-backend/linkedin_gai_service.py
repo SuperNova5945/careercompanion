@@ -187,42 +187,46 @@ class LinkedInGAIService:
             LinkedIn URL: {linkedin_url}
             Target Role: {target_role}
 
-            Generate a resume with the following structure (skip the field if not available):
+            CRITICAL: Use ONLY real information from the LinkedIn profile. Do NOT include any placeholders, examples, or generic text like "Professional Title", "Full Name", "email@example.com", etc.
+
+            Generate a resume with the following JSON structure. ONLY include fields where you have actual data from the profile:
             {{
                 "personalInfo": {{
-                    "name": "Full Name",
-                    "email": "email@example.com", 
-                    "phone": "+1-XXX-XXX-XXXX",
-                    "location": "City, State",
+                    "name": "[actual name from profile]",
+                    "email": "[actual email if available]", 
+                    "phone": "[actual phone if available]",
+                    "location": "[actual location from profile]",
                     "linkedinUrl": "{linkedin_url}"
                 }},
-                "summary": "Professional summary tailored to the target role",
+                "summary": "[write actual professional summary based on profile and target role]",
                 "experience": [
                     {{
-                        "title": "Job Title",
-                        "company": "Company Name", 
-                        "duration": "Start - End",
-                        "achievements": ["Achievement 1", "Achievement 2"]
+                        "title": "[actual job title from profile]",
+                        "company": "[actual company name from profile]", 
+                        "duration": "[actual dates from profile]",
+                        "achievements": ["[actual achievements from profile]"]
                     }}
                 ],
-                "skills": ["Skill1", "Skill2", "Skill3"],
+                "skills": ["[actual skills from profile]"],
                 "education": [
                     {{
-                        "degree": "Degree Name",
-                        "institution": "Institution Name",
-                        "year": "Year"
+                        "degree": "[actual degree from profile]",
+                        "institution": "[actual institution from profile]",
+                        "year": "[actual year from profile]"
                     }}
                 ]
             }}
 
-            Focus on:
-            1. Extracting key information from the LinkedIn profile
-            2. Tailoring content to the target role
-            3. Using action verbs and quantifiable achievements
-            4. Ensuring ATS compatibility
-            5. Professional formatting and structure
+            IMPORTANT RULES:
+            1. Extract ONLY real information from the LinkedIn profile
+            2. Tailor content to the target role using actual experience
+            3. Use action verbs and quantifiable achievements from the profile
+            4. Ensure ATS compatibility
+            5. If information is not available in the profile, DO NOT include that field
+            6. NEVER use placeholder text, examples, or generic terms
+            7. Write a compelling summary based on actual profile content
 
-            Return only the JSON object, no additional text.
+            Return only the JSON object with real data, no additional text or placeholders.
             """)
 
             # Create the chain with ProxiedGPTChat
