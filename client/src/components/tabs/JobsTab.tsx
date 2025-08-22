@@ -244,7 +244,6 @@ const mockJobs: JobWithCompany[] = [
 export function JobsTab() {
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState("best-match");
-  const [showAIChat, setShowAIChat] = useState(false);
   const { toast } = useToast();
 
   const { data: apiJobs, isLoading } = useQuery<JobWithCompany[]>({
@@ -344,7 +343,15 @@ export function JobsTab() {
           };
           
           localStorage.setItem('aiChatContext', JSON.stringify(aiContext));
-          setShowAIChat(true);
+          
+          // Dispatch a custom event to notify the AI chat component
+          window.dispatchEvent(new CustomEvent('aiChatContextUpdate', { detail: aiContext }));
+          
+          toast({
+            title: "Resume Analysis Complete",
+            description: "Check the AI chat assistant for detailed suggestions!",
+            variant: "default"
+          });
         } else {
           throw new Error(result.error || 'Failed to get polishing suggestions');
         }
@@ -599,14 +606,6 @@ export function JobsTab() {
         </div>
       </div>
 
-      {/* AI Chat Assistant Modal */}
-      {showAIChat && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl h-3/4 m-4">
-            <AIChatAssistant onClose={() => setShowAIChat(false)} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

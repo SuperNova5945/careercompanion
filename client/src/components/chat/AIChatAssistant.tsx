@@ -56,17 +56,35 @@ export function AIChatAssistant({ onClose }: AIChatAssistantProps) {
 
   useEffect(() => {
     // Check for resume polishing context from localStorage
-    const contextData = localStorage.getItem('aiChatContext');
-    if (contextData) {
-      try {
-        const parsed = JSON.parse(contextData);
-        if (parsed.type === 'resume_polish') {
-          setPolishingContext(parsed);
+    const loadContext = () => {
+      const contextData = localStorage.getItem('aiChatContext');
+      if (contextData) {
+        try {
+          const parsed = JSON.parse(contextData);
+          if (parsed.type === 'resume_polish') {
+            setPolishingContext(parsed);
+          }
+        } catch (error) {
+          console.error('Error parsing AI chat context:', error);
         }
-      } catch (error) {
-        console.error('Error parsing AI chat context:', error);
       }
-    }
+    };
+
+    // Load context on mount
+    loadContext();
+
+    // Listen for context updates
+    const handleContextUpdate = (event: CustomEvent) => {
+      if (event.detail && event.detail.type === 'resume_polish') {
+        setPolishingContext(event.detail);
+      }
+    };
+
+    window.addEventListener('aiChatContextUpdate', handleContextUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener('aiChatContextUpdate', handleContextUpdate as EventListener);
+    };
   }, []);
 
   const { data: chatHistory } = useQuery<ChatMessage[]>({
