@@ -2,13 +2,13 @@ import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 
 const tabs = [
-  { id: "dashboard", label: "Dashboard", icon: "fas fa-chart-line", path: "/" },
+  { id: "dashboard", label: "Dashboard", icon: "fas fa-tachometer-alt", path: "/" },
   { id: "resume", label: "Resume", icon: "fas fa-file-alt", path: "/resume" },
   { id: "companies", label: "Companies", icon: "fas fa-building", path: "/companies" },
-  { id: "jobs", label: "Jobs", icon: "fas fa-search", path: "/jobs" },
-  { id: "tracker", label: "Tracker", icon: "fas fa-list-ul", path: "/tracker" },
+  { id: "jobs", label: "Jobs", icon: "fas fa-briefcase", path: "/jobs" },
+  { id: "tracker", label: "Tracker", icon: "fas fa-tasks", path: "/tracker" },
   { id: "skills", label: "Skills", icon: "fas fa-graduation-cap", path: "/skills" },
-  { id: "branding", label: "Branding", icon: "fas fa-share-alt", path: "/branding" },
+  { id: "branding", label: "Branding", icon: "fas fa-bullhorn", path: "/branding" },
 ];
 
 export function TabNavigation() {
@@ -25,10 +25,19 @@ export function TabNavigation() {
           {/* Logo */}
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
-              <i className="fas fa-briefcase text-white text-2xl mr-3"></i>
-              <span className="text-xl font-bold text-white">Career Companion</span>
+              <img 
+                src="/assets/career-companion-logo.svg" 
+                alt="Career Companion Logo" 
+                className="w-8 h-8 mr-3"
+              />
+              <img 
+                src="/assets/career-companion-text-logo.svg" 
+                alt="Career Companion" 
+                className="h-full w-auto max-w-48 py-1"
+              />
             </div>
           </div>
+
 
           {/* Navigation Tabs */}
           <nav className="hidden md:flex items-center space-x-6">
@@ -37,15 +46,15 @@ export function TabNavigation() {
                 key={tab.id}
                 onClick={() => handleTabClick(tab.path)}
                 className={cn(
-                  "flex flex-col items-center py-2 px-3 text-xs font-medium transition-all rounded-lg group",
+                  "flex flex-col items-center py-2 px-3 text-sm font-bold transition-all rounded-lg group transform hover:scale-105",
                   location === tab.path
-                    ? "text-white bg-primary-700"
+                    ? "text-white bg-primary-700 shadow-lg"
                     : "text-blue-100 hover:text-white hover:bg-primary-700"
                 )}
                 data-testid={`tab-${tab.id}`}
               >
-                <i className={`${tab.icon} text-lg mb-1`}></i>
-                <span>{tab.label}</span>
+                <i className={`${tab.icon} text-lg mb-1 drop-shadow-sm`}></i>
+                <span className="font-semibold tracking-wide">{tab.label}</span>
               </button>
             ))}
           </nav>
@@ -57,7 +66,7 @@ export function TabNavigation() {
                 <span className="text-sm font-medium text-white hidden sm:block">Chenkai Xie</span>
                 <img 
                   className="h-8 w-8 rounded-full border-2 border-blue-300" 
-                  src="https://images.unsplash.com/photo-1494790108755-2616b612b787?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=150&h=150" 
+                  src="/assets/profile-photo.svg" 
                   alt="User avatar"
                 />
               </div>
@@ -75,15 +84,15 @@ export function TabNavigation() {
                 key={tab.id}
                 onClick={() => handleTabClick(tab.path)}
                 className={cn(
-                  "px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all",
+                  "px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-all transform hover:scale-105",
                   location === tab.path
-                    ? "bg-primary-700 text-white"
+                    ? "bg-primary-700 text-white shadow-lg scale-105"
                     : "text-blue-100 hover:text-white hover:bg-primary-700"
                 )}
                 data-testid={`tab-mobile-${tab.id}`}
               >
-                <i className={`${tab.icon} mr-1`}></i>
-                {tab.label}
+                <i className={`${tab.icon} mr-2 text-base drop-shadow-sm`}></i>
+                <span className="font-semibold tracking-wide">{tab.label}</span>
               </button>
             ))}
           </div>
